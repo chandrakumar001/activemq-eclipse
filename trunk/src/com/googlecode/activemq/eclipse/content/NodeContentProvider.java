@@ -6,7 +6,12 @@ import java.util.Set;
 import org.apache.activemq.advisory.DestinationSource;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ConsumerInfo;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.zest.core.viewers.IGraphContentProvider;
 
 import com.googlecode.activemq.eclipse.model.ActiveMQModel;
@@ -19,35 +24,52 @@ public class NodeContentProvider implements IGraphContentProvider, Runnable {
 
 	protected NodeStore nodeStore = new NodeStore();
 	private ActiveMQModel model;
+	private Viewer viewer;
 
 	public NodeContentProvider() {
 	}
 
 	public void run() {
+		System.out.println("Rebuild ActiveMQ model event for model: " + model);
 		if (model != null) {
-			clear();
-			try {
-				buildRoute(model);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			rebuildModel();
+			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					// TODO avoid refresh if we've just done recently!
+					// viewer.setInput(new Object());
+					viewer.setInput(model);
+					viewer.refresh();
+				}
+			});
+		}
+	}
+
+	protected void rebuildModel() {
+		clear();
+		try {
+			buildRoute(model);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
 	public void setModel(ActiveMQModel model) {
-		if (this.model != null) {
-			this.model.removeModelChangeListener(this);
-		}
-		this.model = model;
-		if (model != null) {
-			model.addModelChangeListener(this);
-			run();
+		if (this.model != model) {
+			if (this.model != null) {
+				this.model.removeModelChangeListener(this);
+			}
+			this.model = model;
+			if (model != null) {
+				model.addModelChangeListener(this);
+				rebuildModel();
+			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		this.viewer = viewer;
 		if (newInput instanceof ActiveMQModel) {
 			setModel((ActiveMQModel) newInput);
 		}
@@ -106,7 +128,8 @@ public class NodeContentProvider implements IGraphContentProvider, Runnable {
 			Collection<ConsumerInfo> consumers = model.getConsumers(queue);
 			for (ConsumerInfo consumerInfo : consumers) {
 				ConsumerNode consumerNode = nodeStore.getConsumerNode(consumerInfo);
-				connect(nodeStore, consumerNode, destinationNode);
+				NodeConnection connect = connect(nodeStore, destinationNode, consumerNode);
+				System.out.println("Added consumer connection: " + connect.getConnectionString());
 			}
 
 			// TODO add producers!
