@@ -23,8 +23,10 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.command.ConsumerId;
 import org.apache.activemq.command.ConsumerInfo;
+import org.apache.activemq.util.ServiceStopper;
+import org.apache.activemq.util.ServiceSupport;
 
-public class ActiveMQModel implements DestinationListener, ConsumerListener {
+public class ActiveMQClient extends ServiceSupport implements DestinationListener, ConsumerListener {
 	private ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
 	private ActiveMQConnection connection;
 	private DestinationSource destinationSource;
@@ -33,9 +35,10 @@ public class ActiveMQModel implements DestinationListener, ConsumerListener {
 	private Map<Destination, Map<ConsumerId, ConsumerInfo>> consumers = new ConcurrentHashMap<Destination, Map<ConsumerId, ConsumerInfo>>();
 	private List<Runnable> modelChangeListeners = new ArrayList<Runnable>();
 
-	public synchronized void start() throws Exception {
+
+	@Override
+	protected void doStart() throws Exception {
 		connection = (ActiveMQConnection) connectionFactory.createConnection();
-		connection.start();
 
 		destinationSource = connection.getDestinationSource();
 		destinationSource.setDestinationListener(this);
@@ -49,10 +52,11 @@ public class ActiveMQModel implements DestinationListener, ConsumerListener {
 		topicConsumerSource.setConsumerListener(this);
 		topicConsumerSource.start();
 
-		Thread.sleep(1000);
+		connection.start();
 	}
 
-	public synchronized void close() throws JMSException {
+	@Override
+	protected void doStop(ServiceStopper stopper) throws Exception {
 		if (connection != null) {
 			connection.close();
 			connection = null;
@@ -108,7 +112,9 @@ public class ActiveMQModel implements DestinationListener, ConsumerListener {
 		Map<ConsumerId, ConsumerInfo> consumerMap = getDestinationConsumerMap(destination);
 		if (consumerEvent instanceof ConsumerStartedEvent) {
 			ConsumerStartedEvent startedEvent = (ConsumerStartedEvent) consumerEvent;
-			consumerMap.put(startedEvent.getConsumerId(), startedEvent.getConsumerInfo());
+			ConsumerInfo consumerInfo = startedEvent.getConsumerInfo();
+			System.out.println("New consumer: " + consumerInfo);
+			consumerMap.put(startedEvent.getConsumerId(), consumerInfo);
 		} else {
 			consumerMap.remove(consumerEvent.getConsumerId());
 		}
@@ -129,4 +135,10 @@ public class ActiveMQModel implements DestinationListener, ConsumerListener {
 			runner.run();
 		}
 	}
+
+	public String getName() {
+		String userName = connectionFactory.getUserName();
+		return connectionFactory.getBrokerURL() + (userName != null && userName.length() > 0 ? " user: " + userName : "");
+	}
+
 }

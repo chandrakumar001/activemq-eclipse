@@ -9,7 +9,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import com.googlecode.activemq.eclipse.model.ActiveMQModel;
+import com.googlecode.activemq.eclipse.model.ActiveMQClient;
 import com.googlecode.activemq.eclipse.views.RouteView;
 
 public class ConnectToActiveMQAction implements IObjectActionDelegate, IJavaLaunchConfigurationConstants {
@@ -17,11 +17,11 @@ public class ConnectToActiveMQAction implements IObjectActionDelegate, IJavaLaun
 
 	ISelection selection;
 	
-	protected static ActiveMQModel instance;
+	protected static ActiveMQClient instance;
 
 	public void run(IAction action) {
 		try {
-			ActiveMQModel model = new ActiveMQModel();
+			ActiveMQClient model = new ActiveMQClient();
 			// TODO hack - lets keep it around :)
 			instance = model;
 			model.start();
@@ -33,13 +33,14 @@ public class ConnectToActiveMQAction implements IObjectActionDelegate, IJavaLaun
 		}
 	}
 
-	protected void handleException(Exception e) {
+	protected static void handleException(Exception e) {
 		// TODO: handle exception
 		System.out.println("Caught: " + e);
 		e.printStackTrace();
 	}
 
-	protected void onConnectionCreated(ActiveMQModel model) {
+	// TODO there must be a neater way of doing this!!!
+	public static void onConnectionCreated(ActiveMQClient model) {
 		try {
 			IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
@@ -47,7 +48,7 @@ public class ConnectToActiveMQAction implements IObjectActionDelegate, IJavaLaun
 			if (routeView == null) {
 				// TODO can we auto-open??
 			} else {
-				activePage.bringToTop(routeView);
+				//activePage.bringToTop(routeView);
 				routeView.setActiveMQModel(model);
 			}
 		} catch (Exception e) {

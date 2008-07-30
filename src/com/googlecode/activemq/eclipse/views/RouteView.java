@@ -43,7 +43,7 @@ import org.eclipse.zest.layouts.algorithms.HorizontalTreeLayoutAlgorithm;
 import com.googlecode.activemq.eclipse.content.DestinationNode;
 import com.googlecode.activemq.eclipse.content.NodeContentProvider;
 import com.googlecode.activemq.eclipse.content.NodeLabelProvider;
-import com.googlecode.activemq.eclipse.model.ActiveMQModel;
+import com.googlecode.activemq.eclipse.model.ActiveMQClient;
 import com.googlecode.activemq.eclipse.utils.ImageShop;
 
 /**
@@ -265,7 +265,7 @@ public class RouteView extends ViewPart implements ISelectionListener {
 		computeAndDoSetInput(null, element);
 	}
 
-	public void setActiveMQModel(ActiveMQModel model) {
+	public void setActiveMQModel(ActiveMQClient model) {
 		viewer.setInput(model);
 	}
 

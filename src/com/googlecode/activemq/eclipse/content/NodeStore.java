@@ -11,7 +11,7 @@ import org.apache.activemq.command.ConsumerId;
 import org.apache.activemq.command.ConsumerInfo;
 import org.eclipse.core.runtime.IAdaptable;
 
-import com.googlecode.activemq.eclipse.model.ActiveMQModel;
+import com.googlecode.activemq.eclipse.model.ActiveMQClient;
 
 public class NodeStore {
 	public List<NodeConnection> connections = new ArrayList<NodeConnection>();
@@ -33,7 +33,7 @@ public class NodeStore {
 		return nodeDataMap.values().toArray();
 	}
 
-	public BrokerNode getBrokerNode(ActiveMQModel model) {
+	public BrokerNode getBrokerNode(ActiveMQClient model) {
 		Object o = nodeDataMap.get(model);
 		BrokerNode nodeData = null;
 		if (o == null) {
