@@ -14,7 +14,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.zest.core.viewers.IGraphContentProvider;
 
-import com.googlecode.activemq.eclipse.model.ActiveMQModel;
+import com.googlecode.activemq.eclipse.model.ActiveMQClient;
 
 /**
  * Can handle either a {@link List<RouteType>} or a {@link RouteSource} as the
@@ -23,7 +23,7 @@ import com.googlecode.activemq.eclipse.model.ActiveMQModel;
 public class NodeContentProvider implements IGraphContentProvider, Runnable {
 
 	protected NodeStore nodeStore = new NodeStore();
-	private ActiveMQModel model;
+	private ActiveMQClient model;
 	private Viewer viewer;
 
 	public NodeContentProvider() {
@@ -54,7 +54,7 @@ public class NodeContentProvider implements IGraphContentProvider, Runnable {
 		}
 	}
 
-	public void setModel(ActiveMQModel model) {
+	public void setModel(ActiveMQClient model) {
 		if (this.model != model) {
 			if (this.model != null) {
 				this.model.removeModelChangeListener(this);
@@ -70,8 +70,8 @@ public class NodeContentProvider implements IGraphContentProvider, Runnable {
 	@SuppressWarnings("unchecked")
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		this.viewer = viewer;
-		if (newInput instanceof ActiveMQModel) {
-			setModel((ActiveMQModel) newInput);
+		if (newInput instanceof ActiveMQClient) {
+			setModel((ActiveMQClient) newInput);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class NodeContentProvider implements IGraphContentProvider, Runnable {
 	public void dispose() {
 	}
 
-	protected void buildRoute(ActiveMQModel model) {
+	protected void buildRoute(ActiveMQClient model) {
 
 		BrokerNode brokerNode = nodeStore.getBrokerNode(model);
 
@@ -119,7 +119,7 @@ public class NodeContentProvider implements IGraphContentProvider, Runnable {
 		buildDestinations(model, brokerNode, destinationSource.getTemporaryTopics());
 	}
 
-	protected void buildDestinations(ActiveMQModel model, BrokerNode brokerNode, Set<? extends ActiveMQDestination> destinations) {
+	protected void buildDestinations(ActiveMQClient model, BrokerNode brokerNode, Set<? extends ActiveMQDestination> destinations) {
 		for (ActiveMQDestination queue : destinations) {
 			DestinationNode destinationNode = nodeStore.getDestinationNode(queue);
 

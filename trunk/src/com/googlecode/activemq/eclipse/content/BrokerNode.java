@@ -3,7 +3,7 @@ package com.googlecode.activemq.eclipse.content;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.graphics.Image;
 
-import com.googlecode.activemq.eclipse.model.ActiveMQModel;
+import com.googlecode.activemq.eclipse.model.ActiveMQClient;
 import com.googlecode.activemq.eclipse.utils.ImageShop;
 
 public class BrokerNode implements Node, IAdaptable {
@@ -16,9 +16,9 @@ public class BrokerNode implements Node, IAdaptable {
 
 	private Image image;
 
-	private final ActiveMQModel model;
+	private final ActiveMQClient model;
 
-	public BrokerNode(ActiveMQModel model) {
+	public BrokerNode(ActiveMQClient model) {
 		this.model = model;
 		this.id = "broker";
 		this.tooltip = "Apache ActiveMQ Broker";
