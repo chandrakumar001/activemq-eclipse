@@ -16,10 +16,14 @@ public class ConnectToActiveMQAction implements IObjectActionDelegate, IJavaLaun
 	protected static final String LAUNCHER_NAME = "Connect to ActiveMQ";
 
 	ISelection selection;
+	
+	protected static ActiveMQModel instance;
 
 	public void run(IAction action) {
 		try {
 			ActiveMQModel model = new ActiveMQModel();
+			// TODO hack - lets keep it around :)
+			instance = model;
 			model.start();
 			onConnectionCreated(model);
 			System.out.println("connected!!!");

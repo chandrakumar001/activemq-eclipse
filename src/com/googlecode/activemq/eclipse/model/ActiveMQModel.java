@@ -96,7 +96,7 @@ public class ActiveMQModel implements DestinationListener, ConsumerListener {
 	}
 
 	public void onDestinationEvent(DestinationEvent destinationEvent) {
-		System.out.println("Destination event: " + destinationEvent);
+		System.out.println("Destination event: " + destinationEvent.getDestination());
 		fireModelChangedListeners();
 	}
 
