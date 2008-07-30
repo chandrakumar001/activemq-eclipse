@@ -16,8 +16,13 @@ ActiveMQ Eclipse Uses Eclipse-3.4 (Ganymede)
 
 Open plugin.xml,in the testing tab select "Lanuch an Eclipse Application".
 
-In the runtime workbench, open the view *ActiveMQ Network View*.
+In the runtime workbench, open the following views
+
+ * *ActiveMQ Connections*
+ * *ActiveMQ Network View*.
 
 Run a broker locally
 
-Then right click on a file and select "Connect to ActiveMQ"
+Right click on a connection in the connections view and select *connect*. 
+
+You should now see the network graph in the ActiveMQ Network view
