@@ -1,0 +1,1 @@
+This project creates an Eclipse plugin for working with Apache ActiveMQ
